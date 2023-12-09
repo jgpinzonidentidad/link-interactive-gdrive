@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/index.js"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Dacorac/link-interactive-gdrive.git"
@@ -19,5 +21,8 @@
   "dependencies": {
     "dotenv": "^16.3.1",
     "googleapis": "^129.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
   }
 }
