@@ -1,4 +1,3 @@
-import fs from 'fs';
 import { google } from 'googleapis';
 
 
@@ -57,7 +56,7 @@ export class GoogleDriveService {
       },
       media: {
         mimeType: fileMimeType,
-        body: fs.createReadStream(filePath),
+        body: filePath,
       },
     }).then(data => console.log(data));
   }

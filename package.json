@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./src/index.js"
+    "start": "node ./src/server.js"
   },
   "type": "module",
   "repository": {
@@ -20,6 +20,7 @@
   "homepage": "https://github.com/Dacorac/link-interactive-gdrive#readme",
   "dependencies": {
     "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "googleapis": "^129.0.0"
   },
   "devDependencies": {
