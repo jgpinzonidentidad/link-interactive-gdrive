@@ -1,20 +1,4 @@
-
-import dotenv from 'dotenv';
-import { GoogleDriveService } from './services/googleDrive.service.js';
 import { takepicture, clearphoto } from './webcam.js';
-
-console.log(dotenv);
-dotenv.config();
-
-//const __filename = fileURLToPath(import.meta.url);
-//const __dirname = path.dirname(__filename);
-
-const driveClientId = process.env.GOOGLE_DRIVE_CLIENT_ID || '';
-const driveClientSecret = process.env.GOOGLE_DRIVE_CLIENT_SECRET || '';
-const driveRedirectUri = process.env.GOOGLE_DRIVE_REDIRECT_URI || '';
-const driveRefreshToken = process.env.GOOGLE_DRIVE_REFRESH_TOKEN || '';
-
-const googleDriveService = new GoogleDriveService(driveClientId, driveClientSecret, driveRedirectUri, driveRefreshToken);
 
 // Define the file to upload
 const fileName = 'image';
@@ -66,32 +50,46 @@ let startbutton = null;
   }, false);
 
   startbutton.addEventListener('click', function(ev){
-    let data = takepicture();
-
-    saveImage(extractedBase64(data));
+    let imageData = takepicture(video, width, height);
+    imageData => imageData.split(',')[1];
+    console.log(JSON.stringify({ data: imageData }))
+    fetch('/capture', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data: imageData }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Image uploaded:', data);
+        // Show success message or update UI with uploaded image details
+      })
+      .catch((error) => console.error(error));
+    // saveImage(extractedBase64(data));
     ev.preventDefault();
   }, false);
   
   clearphoto();
 })();
 
-let extractedBase64 = (imageData) => imageData.split(',')[1];
+// let extractedBase64 = (imageData) => imageData.split(',')[1];
 
-let folder = await googleDriveService.searchFolder(folderName).catch((error) => {
-  console.error(error);
-  return null;
-});
+// let folder = await googleDriveService.searchFolder(folderName).catch((error) => {
+//   console.error(error);
+//   return null;
+// });
 
-let saveImage = async function(imageData) {
-  if (!folder) {
-    folder = await googleDriveService.createFolder(folderName);
-  }
+// let saveImage = async function(imageData) {
+//   if (!folder) {
+//     folder = await googleDriveService.createFolder(folderName);
+//   }
   
-  // Upload the file to Google Drive
-  googleDriveService.saveFile(fileName, imageData, mimeType, folder.id).catch((error) => {
-      console.error(error);
-      var div = document.getElementById('result');
-      div.innerHTML += `<p>${error}</p>`;
-  });
-}
+//   // Upload the file to Google Drive
+//   googleDriveService.saveFile(fileName, imageData, mimeType, folder.id).catch((error) => {
+//       console.error(error);
+//       var div = document.getElementById('result');
+//       div.innerHTML += `<p>${error}</p>`;
+//   });
+// }
 
