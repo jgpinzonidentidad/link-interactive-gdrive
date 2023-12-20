@@ -2,17 +2,32 @@ import { google } from 'googleapis';
 import dotenv from 'dotenv';
 
 dotenv.config();
-// Google Drive API Setup
-const driveClient = google.drive({
-    version: 'v3',
-    auth: new google.auth.OAuth2({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-    }),
-});
 
-let createFolder = async function(folderName) {
+export class GoogleDriveService {
+  driveClient;
+
+  constructor() {
+    this.driveClient = this.createDriveClient(
+      process.env.GOOGLE_DRIVE_CLIENT_ID, 
+      process.env.GOOGLE_DRIVE_CLIENT_SECRET, 
+      process.env.GOOGLE_DRIVE_REDIRECT_URI, 
+      process.env.GOOGLE_DRIVE_REFRESH_TOKEN
+    );
+  }
+
+  createDriveClient(clientId, clientSecret, redirectUri, refreshToken) {
+    const client = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
+
+    client.setCredentials({ refresh_token: refreshToken });
+
+    return google.drive({
+      version: 'v3',
+      auth: client,
+    });
+  }
+
+
+  async createFolder(folderName) {
     return this.driveClient.files.create({
       resource: {
         name: folderName,
@@ -20,9 +35,9 @@ let createFolder = async function(folderName) {
       },
       fields: 'id, name',
     });
-}
+  }
 
-let searchFolder = async function(folderName) {
+  async searchFolder(folderName) {
     return new Promise((resolve, reject) => {
       this.driveClient.files.list(
         {
@@ -38,24 +53,19 @@ let searchFolder = async function(folderName) {
         },
       );
     });
-}
+  }
 
-let saveFile = async function(fileName, filePath, fileMimeType, folderId)
-{
+  async saveFile(fileName, imageBase64, fileMimeType, folderId) {
     return this.driveClient.files.create({
-        requestBody: {
-          name: fileName,
-          mimeType: fileMimeType,
-          parents: folderId ? [folderId] : [],
-        },
-        media: {
-          mimeType: fileMimeType,
-          body: filePath,
-        },
-      }).then(data => console.log(data));
+      requestBody: {
+        name: fileName,
+        mimeType: fileMimeType,
+        parents: folderId ? [folderId] : [],
+      },
+      media: {
+        mimeType: fileMimeType,
+        body: imageBase64,
+      },
+    }).then(data => console.log(data));
+  }
 }
-
-export {saveFile, searchFolder, createFolder}
-
-
-

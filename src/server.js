@@ -1,6 +1,6 @@
 import express from 'express';
 import fs from 'fs';
-import { createFolder, saveFile, searchFolder } from './services/googleDriveservice.js';
+import { GoogleDriveService } from './services/googleDriveservice.js';
 
 const app = express();
 const port = 3000;
@@ -16,23 +16,22 @@ app.get('/', (req, res) => {
 app.post('/capture', async (req, res) => {
     const imageData = req.body.data;
     const fileName = 'image.png';
-    const folderName = 'pictures';
+    const folderName = 'superwurdfolder';
     const mimeType = 'image/png'
-
+    const googleDriveService = new GoogleDriveService();
     // Save image data to a temporary file
-    fs.writeFileSync(fileName, imageData, 'base64');
+    // fs.writeFileSync(fileName, imageData, 'base64');
 
     try {
         // Create a new file in Google Drive
-        let folder = await searchFolder(folderName);
+        let folder = await googleDriveService.searchFolder(folderName);
         if (!folder) {
-            folder = await createFolder(folderName);
+            folder = await googleDriveService.createFolder(folderName);
           }
-
-        const response = saveFile(fileName, fs.createReadStream(fileName), mimeType, folder.id)         
-        fs.unlinkSync(fileName); // Delete temporary file after upload
-
-        res.json({ message: 'Image uploaded successfully!', fileId: response.data.id });
+          
+        const response = googleDriveService.saveFile(fileName, imageData, mimeType, folder.id)         
+        // fs.unlinkSync(fileName); // Delete temporary file after upload
+        res.json({ message: 'Image uploaded successfully!', fileId: response });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error uploading image' });

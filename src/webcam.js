@@ -13,7 +13,6 @@ let takepicture = function(video, width, height) {
     canvas.width = width;
     canvas.height = height;
     context.drawImage(video, 0, 0, width, height);
-    console.log(canvas)
     var data = canvas.toDataURL('image/png');
     photo.setAttribute('src', data);
 

@@ -51,14 +51,13 @@ let startbutton = null;
 
   startbutton.addEventListener('click', function(ev){
     let imageData = takepicture(video, width, height);
-    imageData => imageData.split(',')[1];
-    console.log(JSON.stringify({ data: imageData }))
+    console.log(imageData)
     fetch('/capture', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ data: imageData }),
+      body: JSON.stringify({ data: extractedBase64(imageData) }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -73,7 +72,7 @@ let startbutton = null;
   clearphoto();
 })();
 
-// let extractedBase64 = (imageData) => imageData.split(',')[1];
+let extractedBase64 = (imageData) => imageData.split(',')[1];
 
 // let folder = await googleDriveService.searchFolder(folderName).catch((error) => {
 //   console.error(error);
