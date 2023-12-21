@@ -4,7 +4,7 @@ let clearphoto = function() {
   context.fillRect(0, 0, canvas.width, canvas.height);
 
   var data = canvas.toDataURL('image/png');
-  photo.setAttribute('src', data);
+  // photo.setAttribute('src', data);
 }
 
 let takepicture = function(video, width, height) {
@@ -14,7 +14,7 @@ let takepicture = function(video, width, height) {
     canvas.height = height;
     context.drawImage(video, 0, 0, width, height);
     var data = canvas.toDataURL('image/png');
-    photo.setAttribute('src', data);
+    // photo.setAttribute('src', data);
 
     return data;
   } else {
@@ -22,4 +22,26 @@ let takepicture = function(video, width, height) {
   }
 }
 
-export { takepicture, clearphoto }
+let takepictureBlob = function(video, width, height) {
+  var context = canvas.getContext('2d');
+  if (width && height) {
+    canvas.width = width;
+    canvas.height = height;
+    context.drawImage(video, 0, 0, width, height);
+
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error('Failed to create Blob from canvas'));
+        }
+      }, 'image/png');
+    });
+  } else {
+    clearphoto();
+    return Promise.reject(new Error('Width and height must be provided'));
+  }
+}
+
+export { takepicture, takepictureBlob, clearphoto }

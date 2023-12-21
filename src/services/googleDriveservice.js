@@ -55,6 +55,15 @@ export class GoogleDriveService {
     });
   }
 
+  async saveFileBlob(fileMetadata, media)
+  {
+    return this.driveClient.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: 'id'
+    });
+  }
+
   async saveFile(fileName, imageBase64, fileMimeType, folderId) {
     return this.driveClient.files.create({
       requestBody: {
